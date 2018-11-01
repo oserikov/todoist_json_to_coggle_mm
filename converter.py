@@ -53,15 +53,18 @@ with open('todoist.json', encoding='utf-8') as json_file:
             "childs": [],
             "childs_order": []
         }
-        all_the_data[0]["childs"].append(project["id"])
-        all_the_data[0]["childs_order"].append(project["item_order"])
+
+        project_parent_id = project["parent_id"]
+        if project_parent_id is None:
+            project_parent_id = 0
+
+        if project_parent_id not in all_the_data.keys():
+            all_the_data[project_parent_id] = {"childs": [], "childs_order": []}
+        all_the_data[project_parent_id]["childs"].append(project["id"])
+        all_the_data[project_parent_id]["childs_order"].append(project["item_order"])
 
     for task in tasks:
         if task["checked"] and skip_checked:
-            continue
-
-        if task["id"] in all_the_data.keys():
-            print("wow, doubling!")
             continue
 
         task_parent_id = task["parent_id"]
