@@ -36,6 +36,31 @@ def pretty_print_mm(elem_id, elems_dict: dict, depth=0):
         pretty_print_mm(child_id, elems_dict, depth=depth + 1)
 
 
+def pretty_print_opml(elem_id, elems_dict:dict):
+    print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+    print("<opml version=\"1.0\"><head><title>Todoist tasks</title></head><body>")
+    pretty_print_opml_body(elem_id, elems_dict)
+    print("</body></opml>")
+
+def pretty_print_opml_body(elem_id, elems_dict:dict, depth=0):
+    if elem_id not in elems_dict.keys():
+        return
+
+    prefix = "    " * depth + "<outline"
+    subprefix = " text=\""
+    suffix = "\">"
+    content_ = ""
+    try:
+        content_ = elems_dict[elem_id]["content"]
+    except KeyError:
+        print("ERROR!")
+        return
+
+    print(prefix + " " + subprefix + content_ + suffix)
+    for child_id in elems_dict[elem_id]["childs"]:
+        pretty_print_opml_body(child_id, elems_dict, depth=depth + 1)
+    print(prefix.replace("<", "</") + ">")
+
 with open('todoist.json', encoding='utf-8') as json_file:
     data = json.load(json_file)
     projects = data["projects"]
@@ -90,4 +115,4 @@ with open('todoist.json', encoding='utf-8') as json_file:
         except:
             pass
 
-    pretty_print_mm(0, all_the_data)
+    pretty_print_opml(0, all_the_data)
